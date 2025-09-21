@@ -1,0 +1,212 @@
+:root {
+    --bg1: #e9f7ff;
+    --bg2: #dff2ff;
+    --bg3: #f9c94593;
+    --teal: #00b7a7;
+    --teal-2: #27d0c3;
+    --teal-3: #6fe6db;
+    --ink: #1a488f;
+  }
+
+  * {
+    box-sizing: border-box
+  }
+
+  html,
+  body {
+    height: 100%
+  }
+
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #184896;
+    background:
+      radial-gradient(70vw 70vh at -10% -20%, #bfefff55 0%, #bfefff00 60%),
+      radial-gradient(60vw 60vh at 110% 10%, #b7f6e755 0%, #b7f6e700 60%),
+      linear-gradient(180deg, var(--bg1), var(--bg2));
+    display: grid;
+    place-items: center;
+    padding: 4vmin;
+  }
+
+  .card {
+    position: relative;
+    width: min(980px, 82vw);
+    height: min(520px, 88vh);
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #ffffff, #f9fdff 40%, #f6feff 100%);
+    box-shadow:
+      0 30px 80px rgba(10, 40, 70, .18),
+      0 8px 18px rgba(10, 40, 70, .08);
+  }
+
+  .card .art {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    width: 600px;
+    margin-top: 190px;
+    z-index: 0;
+  }
+
+  .panel {
+    position: relative;
+    top: 40px;
+    left: 50px;
+    width: min(420px, 88vw);
+    border-radius: 18px;
+    color: #1a2b3b;
+    padding: 28px 28px 24px;
+    box-shadow: #0f3554 10px;
+    z-index: 1;
+  }
+
+  .login {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    /* make sure it's above the SVG waves */
+  }
+
+
+  .side-photo {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    background: url("side.jpg") no-repeat center center;
+    height: 100%;
+    object-fit: cover;
+    margin-left: 20vh;
+    display: block;
+    padding-left: 1px;
+    border-radius: 0 18px 18px 0;
+    object-position: 60% center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-weight: 700;
+    letter-spacing: .3px;
+    margin-bottom: 18px;
+  }
+
+  .brand .dot {
+    width: 45px;
+    height: 28px;
+    border-radius: 50%;
+    background: url("logo.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    display: grid;
+    margin-right: -10px;
+    place-items: center;
+    background-size: 80%;
+  }
+
+
+  h1 {
+    margin: 4px 0 18px;
+    font-size: 28px;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+
+  p {
+    margin-top: -20px;
+  }
+
+  .field {
+    position: relative;
+    margin: 10px 0 100vh,
+  }
+
+  .field input {
+    width: 100%;
+    padding: 14px 14px 14px 42px;
+    border: 1px solid #7072749c;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    background: #fbfeff;
+    transition: border .2s, box-shadow .2s, background .2s;
+  }
+
+  .field input:focus {
+    border-color: #1a488f, ;
+    box-shadow: 0 0 0 4px #e9f6ff;
+    background: #fff;
+  }
+
+  .ico {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    translate: 0 -50%;
+    font-size: 16px;
+    opacity: .55;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 6px 0 16px
+  }
+
+  .small a {
+    color: #1a488f;
+    text-decoration: none;
+    font-size: 13px
+  }
+
+  .small a:hover {
+    text-decoration: underline
+  }
+
+  .btn {
+    width: 100%;
+    padding: 13px 16px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #1a488f, #4daa9b, #f6be1c);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(0, 160, 150, .25);
+    transition: transform .06s ease, filter .2s ease;
+  }
+
+  .btn:active {
+    transform: translateY(1px)
+  }
+
+  .muted {
+    font-size: 12px;
+    opacity: .7;
+    margin-top: 12px
+  }
+
+  @media (max-width:800px) {
+    .panel {
+      left: 50%;
+      right: auto;
+      translate: -50% 0;
+      width: 86vw
+    }
+
+    .laptop {
+      width: 170px;
+      bottom: 78px
+    }
+  }

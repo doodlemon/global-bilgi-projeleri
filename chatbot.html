@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent</title>
+  <link rel="stylesheet" href="chatbot.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* minimal header button styling (keeps your original css intact) */
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+      margin-right: 20px;
+    }
+
+    .header-buttons button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'index.html'; // redirect if not logged in
+    }
+  </script>
+</head>
+
+<body>
+  <div class="chat-wrapper">
+    <div class="chat-header">
+      <div class="logo"></div>
+      <h1 id="agentName">Loading...</h1>
+      <div class="header-buttons">
+        <button class="icon-btn" id="restartBtn" title="Restart">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+        <button id="logoutBtn" title="Log out">Çıkış</button>
+      </div>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+      <div class="widget-wrapper">
+        <ivalabs id="agentWidget" class="maximize-mode" profile="test"></ivalabs>
+      </div>
+    </div>
+  </div>
+
+ <script>
+
+  // Decode JWT token
+  function parseJwt(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error('Failed to decode JWT', e);
+      return null;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    try {
+      // Load config.json
+      const response = await fetch('config.json');
+      if (!response.ok) throw new Error('Failed to load config.json');
+      const config = await response.json();
+
+      // Decode token and get roles
+      const decoded = parseJwt(token);
+      const roles = decoded?.realm_access?.roles || [];
+
+      // Find the level role
+      const levelRole = roles.find(r => r.includes('level'));
+      if (!levelRole) {
+        console.error('No level role found in token');
+        alert('No level role found in token. Cannot load agent.');
+        return;
+      }
+
+      // Use the full role as key for config lookup
+      const agentKey = levelRole;
+      const agentId = config.agents[agentKey];
+
+      if (!agentId) {
+        console.error(`No agentId found for role "${agentKey}" in config.json`);
+        alert(`No agentId found for role "${agentKey}".`);
+        return;
+      }
+
+      // Fetch agent info
+      const agentResponse = await fetch(`https://agentcreatortestapi.global-bilgi.entp/agent/${agentId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!agentResponse.ok) throw new Error('Failed to fetch agent info');
+      const data = await agentResponse.json();
+
+      // Update UI
+      const agentNameEl = document.getElementById('agentName');
+      if (agentNameEl) agentNameEl.textContent = data.name || 'Agent';
+      document.title = data.name || 'Agent';
+
+      // Initialize widget the first time
+      const widget = document.getElementById('agentWidget');
+      if (!widget) {
+        console.error('agentWidget element not found');
+        return;
+      }
+      widget.setAttribute('agent-id', agentId);
+      widget.setAttribute('data-token', token);
+
+      // Load snippet script (once)
+      const SNIPPET_SRC = 'https://agentcreatorsnippettest.global-bilgi.entp/index.js';
+      (function loadSnippet() {
+        document.querySelectorAll(`script[src^="${SNIPPET_SRC}"]`).forEach(s => s.remove());
+        const s = document.createElement('script');
+        s.src = SNIPPET_SRC + '?_=' + Date.now();
+        s.onload = () => {
+          if (window.IvaLabs && typeof window.IvaLabs.init === 'function') {
+            window.IvaLabs.init(widget);
+          } else {
+            console.warn('IvaLabs.init not available after loading snippet.');
+          }
+        };
+        s.onerror = () => console.warn('Failed to load snippet.');
+        document.body.appendChild(s);
+      })();
+
+      // ---------- Restart logic ----------
+      const restartBtn = document.getElementById('restartBtn');
+      restartBtn.addEventListener('click', async () => {
+        restartBtn.disabled = true;
+        restartBtn.textContent = 'Temizleniyor...';
+
+        const wrapper = document.querySelector('.widget-wrapper');
+        const snippetBase = SNIPPET_SRC;
+
+        try {
+          if (window.IvaLabs && typeof window.IvaLabs.destroy === 'function') {
+            await window.IvaLabs.destroy();
+          } else if (window.IvaLabs && typeof window.IvaLabs.shutdown === 'function') {
+            await window.IvaLabs.shutdown();
+          }
+
+          document.querySelectorAll(`script[src^="${snippetBase}"]`).forEach(s => s.remove());
+
+          wrapper.innerHTML = '';
+          const newWidget = document.createElement('ivalabs');
+          newWidget.id = 'agentWidget';
+          newWidget.className = 'maximize-mode';
+          newWidget.setAttribute('profile', 'test');
+          newWidget.setAttribute('agent-id', agentId);
+          newWidget.setAttribute('data-token', token);
+          wrapper.appendChild(newWidget);
+
+          try { delete window.IvaLabs; } catch (e) { window.IvaLabs = undefined; }
+
+          await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = snippetBase + '?_=' + Date.now();
+            s.onload = () => {
+              try {
+                if (window.IvaLabs && typeof window.IvaLabs.init === 'function') {
+                  window.IvaLabs.init(newWidget);
+                }
+                resolve();
+              } catch (errInit) {
+                console.warn('IvaLabs.init failed after reload', errInit);
+                resolve();
+              }
+            };
+            s.onerror = () => reject(new Error('Snippet load failed'));
+            document.body.appendChild(s);
+          });
+
+          await new Promise(r => setTimeout(r, 1200));
+          const iframePresent = !!document.querySelector('#agentWidget iframe');
+          if (!iframePresent) {
+            console.warn('Widget iframe not detected after restart — reloading page as fallback');
+            window.location.reload();
+            return;
+          }
+
+        } catch (err) {
+          console.warn('Restart attempt failed, reloading page as fallback', err);
+          window.location.reload();
+        } finally {
+          restartBtn.disabled = false;
+          restartBtn.textContent = '';
+        }
+      });
+
+      // ---------- Exit logic ----------
+      const logoutBtn = document.getElementById('logoutBtn');
+      logoutBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to log out?')) {
+          localStorage.removeItem('token');
+          window.location.href = 'index.html';
+        }
+      });
+
+    } catch (err) {
+      console.error(err);
+    }
+  });
+</script>
+
+</body>
+
+</html>

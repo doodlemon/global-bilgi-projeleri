@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MUHAFIZ</title>
+  <link rel="stylesheet" href="site.css" />
+  <script defer src="login.js"></script>
+</head>
+
+
+<body>
+  <section class="card">
+    <svg class="art" viewBox="0 0 1200 760" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="55%" stop-color="#f2fbff" />
+          <stop offset="100%" stop-color="#e8fbff" />
+        </linearGradient>
+        <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#1258a2" />
+          <stop offset="100%" stop-color="#0d8fca" />
+        </linearGradient>
+        <linearGradient id="g2" x1="1" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#1d5da1" />
+          <stop offset="100%" stop-color="#2273b1" />
+        </linearGradient>
+        <linearGradient id="g3" x1="0" x2="1" y1="1" y2="0">
+          <stop offset="0%" stop-color="#0b3a6a" />
+          <stop offset="100%" stop-color="#1258a2" />
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="760" fill="url(#sky)" />
+      <path d="M0,560 Q300,500 600,560 T1200,560 L1200,760 L0,760 Z" fill="url(#g1)" opacity=".85" />
+      <path d="M0,600 Q300,520 600,600 T1200,600 L1200,760 L0,760 Z" fill="url(#g2)" opacity=".9" />
+      <path d="M0,640 Q300,560 600,640 T1200,640 L1200,760 L0,760 Z" fill="url(#g3)" opacity=".95" />
+    </svg>
+
+    <form id="loginForm" class="login">
+      <div class="panel">
+        <div class="brand"><span class="dot"></span><span>global bilgi</span></div>
+        <h1>MUHAFIZ</h1>
+        <p>IVR Kimlik Yönetimi Servisi</p>
+
+        <label class="field">
+          <span class="ico">👤</span>
+          <input type="text" id="username" name="username" placeholder="Email">
+        </label>
+        <div class="row small"></div>
+        <label class="field">
+          <span class="ico">🔒</span>
+          <input type="password" id="password" name="password" placeholder="Password" required>
+        </label>
+
+        <div class="row small">
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button class="btn" type="submit">Giriş Yap</button>
+        <div class="muted">Don’t have an account? <a href="#">Sign up</a></div>
+      </div>
+
+
+      <div class="side-photo"></div>
+      </div>
+    </form>
+  </section>
+</body>
+
+</html>
